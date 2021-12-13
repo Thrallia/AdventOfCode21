@@ -19,8 +19,59 @@ namespace AdventOfCode
 			//AoC2(@"..\..\..\..\inputs\day2.txt");
 			//AoC3(@"..\..\..\..\inputs\day3.txt");
 			//AoC4(@"..\..\..\..\inputs\day4.txt");
-			AoC5(@"..\..\..\..\inputs\day5.txt");
-			//AoC6(@"..\..\..\..\inputs\day6.txt");
+			//AoC5(@"..\..\..\..\inputs\day5.txt");
+			AoC6(@"..\..\..\..\inputs\day6.txt");
+		}
+
+		private static void AoC6(string path)
+		{
+			List<int> lanterns = new List<int>();
+			using (StreamReader file = new StreamReader(path))
+			{
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine();
+					lanterns = line.Split(',').ToList().ConvertAll<int>(x => int.Parse(x));
+				}
+			}
+
+			int maxDays = 256;
+			int day = 0;
+
+			Dictionary<int, long> fish = new Dictionary<int, long>();
+			fish.Add(0, lanterns.Count(x => x == 0));
+			fish.Add(1, lanterns.Count(x => x == 1));
+			fish.Add(2, lanterns.Count(x => x == 2));
+			fish.Add(3, lanterns.Count(x => x == 3));
+			fish.Add(4, lanterns.Count(x => x == 4));
+			fish.Add(5, lanterns.Count(x => x == 5));
+			fish.Add(6, lanterns.Count(x => x == 6));
+			fish.Add(7, lanterns.Count(x => x == 7));
+			fish.Add(8, lanterns.Count(x => x == 8));
+
+			do
+			{
+				//giving birth today
+				long temp = fish[0];
+				//progress each day
+				fish[0] = fish[1];
+				fish[1] = fish[2];
+				fish[2] = fish[3];
+				fish[3] = fish[4];
+				fish[4] = fish[5];
+				fish[5] = fish[6];
+				fish[6] = fish[7];
+				fish[7] = fish[8];
+				//create new fish
+				fish[8] = temp;
+				//reset birth timer
+				fish[6] = fish[6] + temp;
+
+				day++;
+			} while (day < maxDays);
+
+			Console.WriteLine(fish.Sum(x=>x.Value));
+			Console.ReadKey();
 		}
 
 		private static void AoC5(string path)
@@ -36,14 +87,14 @@ namespace AdventOfCode
 			}
 
 			List<VentLines> ventLines = new List<VentLines>();
-			foreach(var input in inputs)
+			foreach (var input in inputs)
 			{
 				var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 				ventLines.Add(new VentLines(parts[0], parts[2]));
 			}
 
 			Dictionary<Point, int> grid = new Dictionary<Point, int>();
-			for(int i=0; i <= Math.Max(ventLines.Max(x=>x.Start.X), ventLines.Max(x => x.End.X));i++)
+			for (int i = 0; i <= Math.Max(ventLines.Max(x => x.Start.X), ventLines.Max(x => x.End.X)); i++)
 			{
 				for (int j = 0; j <= Math.Max(ventLines.Max(x => x.Start.Y), ventLines.Max(x => x.End.Y)); j++)
 				{
@@ -51,16 +102,16 @@ namespace AdventOfCode
 				}
 			}
 			var count = ventLines.Count(x => x.Straight());
-			foreach(var ventLine in ventLines)
+			foreach (var ventLine in ventLines)
 			{
 				//if(ventLine.Straight())
 				//{
-					foreach (var point in ventLine.Points)
-						grid[point]++;
+				foreach (var point in ventLine.Points)
+					grid[point]++;
 				//}
 			}
 
-			Console.WriteLine(grid.Count(x=>x.Value>1));
+			Console.WriteLine(grid.Count(x => x.Value > 1));
 			Console.ReadKey();
 		}
 
@@ -77,7 +128,7 @@ namespace AdventOfCode
 					var line = file.ReadLine();
 					if (string.IsNullOrWhiteSpace(line))
 					{
-						if(cardInput.Count>0)
+						if (cardInput.Count > 0)
 						{
 							BingoCard card = new BingoCard();
 							card.FillCard(cardInput);
@@ -131,11 +182,11 @@ namespace AdventOfCode
 				//		return card.GetUnmarkedSum() * num;
 				//	}
 				//}
-				if(cards.Count>1)
+				if (cards.Count > 1)
 					cards.RemoveAll(x => x.CheckForWin());
 				else
 				{
-					if(cards.First().CheckForWin())
+					if (cards.First().CheckForWin())
 						return cards.First().GetUnmarkedSum() * num;
 				}
 			}

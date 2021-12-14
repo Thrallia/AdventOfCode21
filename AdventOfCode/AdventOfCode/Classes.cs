@@ -157,7 +157,7 @@ namespace AdventOfCode
 			{
 				for (int y = 0; y < Card.GetLength(1); y++)
 				{
-					if (!Card[x, y].GetStatus()) 
+					if (!Card[x, y].GetStatus())
 						sum += Card[x, y].GetValue();
 				}
 			}
@@ -220,11 +220,11 @@ namespace AdventOfCode
 			IEnumerable<int> points;
 
 			if (s == e)
-				points= Enumerable.Repeat(s, int.MaxValue);
+				points = Enumerable.Repeat(s, int.MaxValue);
 			else
 			{
 				if (s < e)
-					points = Enumerable.Range(s, Math.Abs(s-e) + 1);
+					points = Enumerable.Range(s, Math.Abs(s - e) + 1);
 				else
 					points = Enumerable.Range(e, Math.Abs(s - e) + 1).Reverse();
 			}
@@ -238,16 +238,6 @@ namespace AdventOfCode
 				return true;
 			else
 				return false;
-		}
-
-		public int GetXDistance()
-		{
-			return Math.Abs(Start.X - End.X);
-		}
-
-		public int GetYDistance()
-		{
-			return Math.Abs(Start.Y - End.Y);
 		}
 	}
 }

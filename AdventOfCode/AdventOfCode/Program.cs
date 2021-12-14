@@ -20,7 +20,50 @@ namespace AdventOfCode
 			//AoC3(@"..\..\..\..\inputs\day3.txt");
 			//AoC4(@"..\..\..\..\inputs\day4.txt");
 			//AoC5(@"..\..\..\..\inputs\day5.txt");
-			AoC6(@"..\..\..\..\inputs\day6.txt");
+			//AoC6(@"..\..\..\..\inputs\day6.txt");
+			AoC7(@"..\..\..\..\inputs\day7.txt");
+
+		}
+
+		private static void AoC7(string path)
+		{
+			List<int> crabs = new List<int>();
+			using (StreamReader file = new StreamReader(path))
+			{
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine();
+					crabs = line.Split(',').ToList().ConvertAll<int>(x => int.Parse(x));
+				}
+			}
+
+			int sum = crabs.Sum();
+			int count = crabs.Count();
+			int halfMean = (sum / count) / 2;
+
+			List<int> fuelRange = new List<int>();
+			fuelRange.Add(int.MaxValue);
+			//for (int i = leastFuel - 4; i < leastFuel + 5; i++)
+			//	fuelRange.Add(i);
+
+			int offset = 0;
+
+			do
+			{
+				int fuelUsed = 0;
+				foreach (var crab in crabs)
+				{
+					int steps = Math.Abs(crab - (halfMean + offset));
+					for (int i = 1; i <= steps; i++)
+						fuelUsed += i;
+				}
+				offset++;
+				fuelRange.Add(fuelUsed);
+			} while (fuelRange.Last() < fuelRange[fuelRange.Count - 2]);
+
+
+			Console.WriteLine(fuelRange.Min());
+			Console.ReadKey();
 		}
 
 		private static void AoC6(string path)
@@ -70,7 +113,7 @@ namespace AdventOfCode
 				day++;
 			} while (day < maxDays);
 
-			Console.WriteLine(fish.Sum(x=>x.Value));
+			Console.WriteLine(fish.Sum(x => x.Value));
 			Console.ReadKey();
 		}
 

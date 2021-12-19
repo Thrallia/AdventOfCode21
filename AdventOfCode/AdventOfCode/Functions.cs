@@ -101,7 +101,14 @@ namespace AdventOfCode
 			return false;
 		}
 
-		//from day 3
+		public static bool RoughEqual(string pattern, string input)
+		{
+			if (input.Length==pattern.Length && input.Except(pattern).ToArray().Length == 0)
+				return true;
+			else
+				return false;
+			
+		}
 
 	}
 }

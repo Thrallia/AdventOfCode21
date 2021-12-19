@@ -21,8 +21,115 @@ namespace AdventOfCode
 			//AoC4(@"..\..\..\..\inputs\day4.txt");
 			//AoC5(@"..\..\..\..\inputs\day5.txt");
 			//AoC6(@"..\..\..\..\inputs\day6.txt");
-			AoC7(@"..\..\..\..\inputs\day7.txt");
+			//AoC7(@"..\..\..\..\inputs\day7.txt");
+			AoC8(@"..\..\..\..\inputs\day8.txt");
 
+		}
+
+		private static void AoC8(string path)
+		{
+			List<string> displayTest = new List<string>();
+			List<string> outputs = new List<string>();
+			using (StreamReader file = new StreamReader(path))
+			{
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine().Split('|');
+					displayTest.Add(line[0]);
+					outputs.Add(line[1]);
+				}
+			}
+
+			//part 1
+			List<string> separatedOutputs = new List<string>();
+			outputs.ForEach(x => separatedOutputs.AddRange(x.Split(' ', StringSplitOptions.RemoveEmptyEntries)));
+
+			int count = 0;
+
+			count += separatedOutputs.Count(x => x.Length == 2);
+			count += separatedOutputs.Count(x => x.Length == 4);
+			count += separatedOutputs.Count(x => x.Length == 3);
+			count += separatedOutputs.Count(x => x.Length == 7);
+
+			//part 2
+			int iter = 0;
+			List<string> results = new List<string>();
+			foreach (var dis in displayTest)
+			{
+				var digits = dis.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+				string one = digits.Where(x => x.Length == 2).First();
+				string seven = digits.Where(x => x.Length == 3).First();
+				string four = digits.Where(x => x.Length == 4).First();
+				string eight = digits.Where(x => x.Length == 7).First();
+				string zero = string.Empty;
+				string six = string.Empty;
+				string nine = string.Empty;
+				string two = string.Empty;
+				string three = string.Empty;
+				string five = string.Empty;
+
+				var a = new string(seven.Except(one).ToArray());
+				var bd = new string(four.Except(seven).ToArray());
+				string d = string.Empty;
+				string b = string.Empty;
+				string c = string.Empty;
+				string e = string.Empty;
+				string f = string.Empty;
+				string g = string.Empty;
+				foreach (var dig in digits.Where(x => x.Length == 6))
+				{
+					if (dig.Except(bd).ToArray().Length == 5)
+					{
+						zero = dig;
+					}
+					else
+					{
+						if (dig.Except(one).ToArray().Length == 5)
+						{
+							six = dig;
+						}
+						else
+						{
+							nine = dig;
+						}
+					}
+				}
+
+				c = new string(one.Except(six).ToArray());
+				e = new string(six.Except(nine).ToArray());
+				d = new string(bd.Except(zero).ToArray());
+				b = new string(bd.Except(d).ToArray());
+				g = new string(nine.Except(four.Concat(a)).ToArray());
+				f = new string(one.Except(c).ToArray());
+
+				two = a + c + d + e + g;
+				three = a + c + d + f + g;
+				five = a + b + d + f + g;
+
+				List<string> numbers = new List<string>();
+				numbers.AddRange(new string[] { zero, one, two, three, four, five, six, seven, eight, nine});
+
+				var output = outputs[iter].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+				string value = string.Empty;
+				foreach(var digit in output)
+				{
+					foreach(var num in numbers)
+					{
+						if(Functions.RoughEqual(num, digit))
+						{
+							value += numbers.IndexOf(num);
+							break;
+						}
+					}
+				}
+				results.Add(value);
+				iter++;
+			}
+			List<int> finals = results.ConvertAll<int>(x => int.Parse(x));
+
+			Console.WriteLine(count);
+			Console.WriteLine(finals.Sum());
+			Console.ReadKey();
 		}
 
 		private static void AoC7(string path)
@@ -304,6 +411,7 @@ namespace AdventOfCode
 
 
 		}
+
 		private static void AoC1(string path)
 		{
 			OrderedList depths = new OrderedList();
@@ -406,6 +514,22 @@ namespace AdventOfCode
 			Console.WriteLine("Part 1: " + (position * depth));
 			Console.WriteLine("Part 2: " + (x * y));
 			Console.ReadKey();
+		}
+
+		private static void AoC(string path)
+		{
+			List<string> displayTest = new List<string>();
+			using (StreamReader file = new StreamReader(path))
+			{
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine();
+				}
+			}
+
+			Console.WriteLine();
+			Console.ReadKey();
+
 		}
 	}
 }

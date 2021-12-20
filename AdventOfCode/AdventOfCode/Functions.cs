@@ -106,8 +106,23 @@ namespace AdventOfCode
 			if (input.Length==pattern.Length && input.Except(pattern).ToArray().Length == 0)
 				return true;
 			else
-				return false;
-			
+				return false;			
+		}
+
+		public static List<(int, int)> GetValidNeighbors(int[,] map, (int x, int y) lowCoord, List<(int, int)> proxy, List<(int, int)> mapped)
+		{
+			List<(int, int)> neighbors = new List<(int, int)>();
+			foreach (var (p1, p2) in proxy)
+			{
+				try
+				{
+					if (map[lowCoord.x + p1, lowCoord.y + p2] < 9)
+						neighbors.Add((lowCoord.x + p1, lowCoord.y + p2));
+				}
+				catch (IndexOutOfRangeException)
+				{ }
+			}
+			return neighbors.Except(mapped).ToList();
 		}
 
 	}

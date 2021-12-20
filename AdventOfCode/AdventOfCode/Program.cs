@@ -22,9 +22,93 @@ namespace AdventOfCode
 			//AoC5(@"..\..\..\..\inputs\day5.txt");
 			//AoC6(@"..\..\..\..\inputs\day6.txt");
 			//AoC7(@"..\..\..\..\inputs\day7.txt");
-			AoC8(@"..\..\..\..\inputs\day8.txt");
+			//AoC8(@"..\..\..\..\inputs\day8.txt");
+			AoC9(@"..\..\..\..\inputs\day9.txt");
 
 		}
+
+		private static void AoC9(string path)
+		{
+			List<string> wholeMap = new List<string>();
+			using (StreamReader file = new StreamReader(path))
+			{
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine();
+					wholeMap.Add(line);
+				}
+			}
+
+			int[,] map = new int[wholeMap.First().Length, wholeMap.Count];
+
+			int i = 0;
+			int j = 0;
+			foreach (var line in wholeMap)
+			{
+				foreach (var spot in line)
+				{
+					map[i, j] = int.Parse(spot.ToString());
+					j++;
+				}
+				i++;
+				j = 0;
+			}
+
+			List<int> lowPoints = new List<int>();
+			List<(int x, int y)> lowCoords = new List<(int x, int y)>();
+			List<(int, int)> dex = new List<(int, int)> { (1, 0), (-1, 0), (0, 1), (0, -1) };
+			int maxX = map.GetLength(0);
+			int maxY = map.GetLength(1);
+
+			for (int x = 0; x < maxX; x++)
+			{
+				for (int y = 0; y < maxY; y++)
+				{
+					List<int> proxy = new List<int>();
+					int point = map[x, y];
+					foreach (var (p1, p2) in dex)
+					{
+						try
+						{
+							proxy.Add(map[x + p1, y + p2]);
+
+						}
+						catch (IndexOutOfRangeException)
+						{ }
+					}
+					if (point < proxy.Min())
+					{
+						lowPoints.Add(point);
+						lowCoords.Add((x, y));
+					}
+				}
+			}
+
+			List<int> basinSize = new List<int>();
+			foreach (var lowCoord in lowCoords)
+			{
+				List<(int, int)> mapped = new List<(int, int)>();
+				List<(int, int)> neighbors = new List<(int, int)>();
+
+				neighbors.AddRange(Functions.GetValidNeighbors(map, lowCoord, dex, mapped));
+				for (int k = 0; k < neighbors.Count; k++)
+				{
+					if (!mapped.Contains(neighbors[k]))
+						mapped.Add(neighbors[k]);
+
+					neighbors.AddRange(Functions.GetValidNeighbors(map, neighbors[k], dex, mapped));
+				}
+				basinSize.Add(mapped.Count());
+			}
+
+			basinSize.Sort();
+			basinSize.Reverse();
+
+			Console.WriteLine(lowPoints.Sum() + lowPoints.Count());
+			Console.WriteLine(basinSize[0] * basinSize[1] * basinSize[2]);
+			Console.ReadKey();
+		}
+
 
 		private static void AoC8(string path)
 		{
@@ -107,15 +191,15 @@ namespace AdventOfCode
 				five = a + b + d + f + g;
 
 				List<string> numbers = new List<string>();
-				numbers.AddRange(new string[] { zero, one, two, three, four, five, six, seven, eight, nine});
+				numbers.AddRange(new string[] { zero, one, two, three, four, five, six, seven, eight, nine });
 
 				var output = outputs[iter].Split(' ', StringSplitOptions.RemoveEmptyEntries);
 				string value = string.Empty;
-				foreach(var digit in output)
+				foreach (var digit in output)
 				{
-					foreach(var num in numbers)
+					foreach (var num in numbers)
 					{
-						if(Functions.RoughEqual(num, digit))
+						if (Functions.RoughEqual(num, digit))
 						{
 							value += numbers.IndexOf(num);
 							break;

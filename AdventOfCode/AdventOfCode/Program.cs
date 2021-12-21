@@ -23,7 +23,140 @@ namespace AdventOfCode
 			//AoC6(@"..\..\..\..\inputs\day6.txt");
 			//AoC7(@"..\..\..\..\inputs\day7.txt");
 			//AoC8(@"..\..\..\..\inputs\day8.txt");
-			AoC9(@"..\..\..\..\inputs\day9.txt");
+			//AoC9(@"..\..\..\..\inputs\day9.txt");
+			AoC10(@"..\..\..\..\inputs\day10.txt");
+
+		}
+
+		private static void AoC10(string path)
+		{
+			Dictionary<char, int> corruptScoring = new Dictionary<char, int>();
+			corruptScoring.Add(')', 3);
+			corruptScoring.Add(']', 57);
+			corruptScoring.Add('}', 1197);
+			corruptScoring.Add('>', 25137);
+			Dictionary<char, int> completeScoring = new Dictionary<char, int>();
+			completeScoring.Add(')', 1);
+			completeScoring.Add(']', 2);
+			completeScoring.Add('}', 3);
+			completeScoring.Add('>', 4);
+
+			List<string> subsystems = new List<string>();
+			using (StreamReader file = new StreamReader(path))
+			{
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine();
+					subsystems.Add(line);
+				}
+			}
+
+			List<char> opens = new List<char>();
+			opens.Add('(');
+			opens.Add('[');
+			opens.Add('{');
+			opens.Add('<');
+			List<char> closes = new List<char>();
+			closes.Add(')');
+			closes.Add(']');
+			closes.Add('}');
+			closes.Add('>');
+
+			Dictionary<char, char> paired = new Dictionary<char, char>();
+			paired.Add('(', ')');
+			paired.Add('[', ']');
+			paired.Add('{', '}');
+			paired.Add('<', '>');
+
+			Stack<char> syntax = new Stack<char>();
+			List<string> corrupted = new List<string>();
+			List<char> errors = new List<char>();
+			List<string> incomplete = new List<string>();
+
+			foreach (var subsystem in subsystems)
+			{
+				foreach (char chunk in subsystem)
+				{
+					if (opens.Contains(chunk))
+						syntax.Push(chunk);
+					else if(closes.Contains(chunk))
+					{
+						try
+						{
+							var last = syntax.Pop();
+							if (paired[last].Equals(chunk))
+								continue;
+							else
+							{
+								corrupted.Add(subsystem);
+								errors.Add(chunk);
+								syntax.Clear();
+								break;
+							}
+						}
+						catch(InvalidOperationException e)
+						{
+							incomplete.Add(subsystem);
+							break;
+						}
+					}
+				}
+				if (syntax.Count > 0)
+					incomplete.Add(subsystem);
+				syntax.Clear();
+			}
+
+			//part 1
+			long corruptScore = 0;
+			foreach(var err in errors)
+			{
+				corruptScore += corruptScoring[err];
+			}
+
+			//part 2
+			List<char> added = new List<char>();
+			List<long> completeScores = new List<long>();
+			syntax.Clear();
+			foreach (var complete in incomplete)
+			{
+				foreach (char chunk in complete)
+				{
+					if (opens.Contains(chunk))
+						syntax.Push(chunk);
+					else if (closes.Contains(chunk))
+					{
+						try
+						{
+							var last = syntax.Pop();
+							if (paired[last].Equals(chunk))
+								continue;
+						}
+						catch (InvalidOperationException e)
+						{							
+							break;
+						}
+					}
+				}
+				while(syntax.Count>0)
+				{
+					var next = syntax.Pop();
+					added.Add(paired[next]);
+				}
+				long points = 0;
+				foreach(var score in added)
+				{
+					points *= 5;
+					points += completeScoring[score];
+				}
+				completeScores.Add(points);
+				added.Clear();
+			}
+
+			completeScores.Sort();
+
+			Console.WriteLine(corruptScore);
+			Console.WriteLine(completeScores[completeScores.Count/2]);
+			Console.ReadKey();
 
 		}
 
@@ -108,7 +241,6 @@ namespace AdventOfCode
 			Console.WriteLine(basinSize[0] * basinSize[1] * basinSize[2]);
 			Console.ReadKey();
 		}
-
 
 		private static void AoC8(string path)
 		{

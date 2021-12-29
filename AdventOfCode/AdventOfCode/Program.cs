@@ -24,7 +24,89 @@ namespace AdventOfCode
 			//AoC7(@"..\..\..\..\inputs\day7.txt");
 			//AoC8(@"..\..\..\..\inputs\day8.txt");
 			//AoC9(@"..\..\..\..\inputs\day9.txt");
-			AoC10(@"..\..\..\..\inputs\day10.txt");
+			//AoC10(@"..\..\..\..\inputs\day10.txt");
+			AoC11(@"..\..\..\..\inputs\day11.txt");
+
+		}
+
+		private static void AoC11(string path)
+		{
+			List<string> map = new List<string>();
+			using (StreamReader file = new StreamReader(path))
+			{
+				while (!file.EndOfStream)
+				{
+					var line = file.ReadLine();
+					map.Add(line);
+				}
+			}
+
+			List<(int, int)> dex = new List<(int, int)> { (-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1) };
+			int[,] octopii = new int[map.First().Length, map.Count];
+
+			int i = 0;
+			int j = 0;
+			foreach (var line in map)
+			{
+				foreach (var spot in line)
+				{
+					octopii[i, j] = int.Parse(spot.ToString());
+					j++;
+				}
+				i++;
+				j = 0;
+			}
+
+			//Functions.WriteMapToScreen(octopii);
+
+			int step = 0;
+			int maxSteps = 100;
+			List<int> flashesPerTurn = new List<int>();
+
+			while (flashesPerTurn.Count==0 || flashesPerTurn[step-1] <100)
+			{
+				int maxX = octopii.GetLength(0);
+				int maxY = octopii.GetLength(1);
+				List<(int, int)> flashedThisStep = new List<(int, int)>();
+
+				for (int x = 0; x < maxX; x++)
+					for (int y = 0; y < maxY; y++)
+						octopii[x, y]++;
+
+				do
+				{
+					for (int x = 0; x < maxX; x++)
+					{
+						for (int y = 0; y < maxY; y++)
+						{
+							int octopus = octopii[x, y];
+							if (octopus > 9 && !flashedThisStep.Contains((x, y)))
+							{
+								flashedThisStep.Add((x, y));
+								foreach (var (p1, p2) in dex)
+								{
+									try
+									{
+										octopii[x + p1, y + p2]++;
+									}
+									catch (IndexOutOfRangeException)
+									{ }
+								}
+							}
+						}
+					}
+				} while (Functions.NewFlashes(octopii, flashedThisStep));
+				flashesPerTurn.Add(flashedThisStep.Count);
+				flashedThisStep.Clear();
+				Functions.ResetFlashedOctopii(ref octopii);
+				step++;
+				if (step % 10 == 0)
+					Functions.WriteMapToScreen(octopii);
+			}
+
+			Console.WriteLine(flashesPerTurn.Sum());
+			Console.WriteLine(flashesPerTurn.Count);
+			Console.ReadKey();
 
 		}
 
@@ -79,7 +161,7 @@ namespace AdventOfCode
 				{
 					if (opens.Contains(chunk))
 						syntax.Push(chunk);
-					else if(closes.Contains(chunk))
+					else if (closes.Contains(chunk))
 					{
 						try
 						{
@@ -94,7 +176,7 @@ namespace AdventOfCode
 								break;
 							}
 						}
-						catch(InvalidOperationException e)
+						catch (InvalidOperationException e)
 						{
 							incomplete.Add(subsystem);
 							break;
@@ -108,7 +190,7 @@ namespace AdventOfCode
 
 			//part 1
 			long corruptScore = 0;
-			foreach(var err in errors)
+			foreach (var err in errors)
 			{
 				corruptScore += corruptScoring[err];
 			}
@@ -132,18 +214,18 @@ namespace AdventOfCode
 								continue;
 						}
 						catch (InvalidOperationException e)
-						{							
+						{
 							break;
 						}
 					}
 				}
-				while(syntax.Count>0)
+				while (syntax.Count > 0)
 				{
 					var next = syntax.Pop();
 					added.Add(paired[next]);
 				}
 				long points = 0;
-				foreach(var score in added)
+				foreach (var score in added)
 				{
 					points *= 5;
 					points += completeScoring[score];
@@ -155,7 +237,7 @@ namespace AdventOfCode
 			completeScores.Sort();
 
 			Console.WriteLine(corruptScore);
-			Console.WriteLine(completeScores[completeScores.Count/2]);
+			Console.WriteLine(completeScores[completeScores.Count / 2]);
 			Console.ReadKey();
 
 		}

@@ -77,7 +77,6 @@ namespace AdventOfCode
 			}
 		}
 
-
 		//from day 4
 		public static bool calcPassGroups(char[] digits)
 		{
@@ -103,10 +102,10 @@ namespace AdventOfCode
 
 		public static bool RoughEqual(string pattern, string input)
 		{
-			if (input.Length==pattern.Length && input.Except(pattern).ToArray().Length == 0)
+			if (input.Length == pattern.Length && input.Except(pattern).ToArray().Length == 0)
 				return true;
 			else
-				return false;			
+				return false;
 		}
 
 		public static List<(int, int)> GetValidNeighbors(int[,] map, (int x, int y) lowCoord, List<(int, int)> proxy, List<(int, int)> mapped)
@@ -125,5 +124,40 @@ namespace AdventOfCode
 			return neighbors.Except(mapped).ToList();
 		}
 
+		public static void ResetFlashedOctopii(ref int[,] octopii)
+		{
+			for (int x = 0; x < octopii.GetLength(0); x++)
+				for (int y = 0; y < octopii.GetLength(1); y++)
+					if (octopii[x, y] > 9)
+						octopii[x, y] = 0;
+		}
+
+		public static bool NewFlashes(int[,] octopii, List<(int, int)> flashed)
+		{
+			bool newFlashes = false;
+
+			for (int x = 0; x < octopii.GetLength(0); x++)
+			{
+				for (int y = 0; y < octopii.GetLength(1); y++)
+				{
+					int octopus = octopii[x, y];
+					if (octopus > 9 && !flashed.Contains((x, y)))
+						newFlashes = true;
+				}
+			}
+			return newFlashes;
+		}
+
+		public static void WriteMapToScreen(int[,] octopii)
+		{
+			for (int x = 0; x < octopii.GetLength(0); x++)
+			{
+				for (int y = 0; y < octopii.GetLength(1); y++)
+					Console.Write(octopii[x, y]);
+				Console.WriteLine();
+			}
+			Console.WriteLine();
+			//Console.WriteLine();
+		}
 	}
 }
